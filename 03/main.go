@@ -15,8 +15,81 @@ type coordinate struct {
 }
 
 func main() {
-	fmt.Println(puzzle1())
-	fmt.Println(puzzle2())
+	//fmt.Println(puzzle1())
+	fmt.Println(puzzle1Retry())
+	//fmt.Println(puzzle2())
+}
+
+// Use hash map to track coordinate instead.
+func puzzle1Retry() int {
+	wires := readWires("03.txt")
+	wirePath := make(map[coordinate]bool)
+	var currCoord coordinate
+	for _, segment := range strings.Split(wires[0], ",") {
+		wireLength, _ := strconv.Atoi(segment[1:])
+		switch segment[0] {
+		case 'U':
+			for dy := 0; dy < wireLength; dy++ {
+				currCoord.Y++
+				wirePath[currCoord] = true
+			}
+		case 'D':
+			for dy := 0; dy < wireLength; dy++ {
+				currCoord.Y--
+				wirePath[currCoord] = true
+			}
+		case 'R':
+			for dx := 0; dx < wireLength; dx++ {
+				currCoord.X++
+				wirePath[currCoord] = true
+			}
+		case 'L':
+			for dx := 0; dx < wireLength; dx++ {
+				currCoord.X--
+				wirePath[currCoord] = true
+			}
+		}
+	}
+
+	var intersections []coordinate
+	// wire 2
+	currCoord = coordinate{0, 0}
+	for _, segment := range strings.Split(wires[1], ",") {
+		wireLength, _ := strconv.Atoi(segment[1:])
+		switch segment[0] {
+		case 'U':
+			for dy := 0; dy < wireLength; dy++ {
+				currCoord.Y++
+				if wirePath[currCoord] == true {
+					intersections = append(intersections, currCoord)
+				}
+			}
+		case 'D':
+			for dy := 0; dy < wireLength; dy++ {
+				currCoord.Y--
+				if wirePath[currCoord] == true {
+					intersections = append(intersections, currCoord)
+				}
+			}
+		case 'R':
+			for dx := 0; dx < wireLength; dx++ {
+				currCoord.X++
+				if wirePath[currCoord] == true {
+					intersections = append(intersections, currCoord)
+				}
+			}
+		case 'L':
+			for dx := 0; dx < wireLength; dx++ {
+				currCoord.X--
+				if wirePath[currCoord] == true {
+					intersections = append(intersections, currCoord)
+				}
+			}
+		}
+	}
+
+	fmt.Println(intersections)
+	return minManhattanDistance(intersections)
 }
 
 func puzzle1() int {
@@ -43,40 +116,40 @@ func puzzle1() int {
 			switch segment[0] {
 			case 'U':
 				for dy := 1; dy <= wireLength; dy++ {
-					coord := coordinate{currCoord.X, currCoord.Y + dy}
+					coord := coordinate{currCoord.X, currCoord.Y}
 					if board[coord.Y][coord.X] && i == 1 {
 						intersections = append(intersections, coord)
 					}
 					board[coord.Y][coord.X] = true
+					currCoord.Y++
 				}
-				currCoord.Y += wireLength
 			case 'D':
 				for dy := 1; dy <= wireLength; dy++ {
-					coord := coordinate{currCoord.X, currCoord.Y - dy}
+					coord := coordinate{currCoord.X, currCoord.Y}
 					if board[coord.Y][coord.X] && i == 1 {
 						intersections = append(intersections, coord)
 					}
 					board[coord.Y][coord.X] = true
+					currCoord.Y--
 				}
-				currCoord.Y -= wireLength
 			case 'L':
 				for dx := 1; dx <= wireLength; dx++ {
-					coord := coordinate{currCoord.X - dx, currCoord.Y}
+					coord := coordinate{currCoord.X, currCoord.Y}
 					if board[coord.Y][coord.X] && i == 1 {
 						intersections = append(intersections, coord)
 					}
 					board[coord.Y][coord.X] = true
+					currCoord.X--
 				}
-				currCoord.X -= wireLength
 			case 'R':
 				for dx := 1; dx <= wireLength; dx++ {
-					coord := coordinate{currCoord.X + dx, currCoord.Y}
+					coord := coordinate{currCoord.X, currCoord.Y}
 					if board[coord.Y][coord.X] && i == 1 {
 						intersections = append(intersections, coord)
 					}
 					board[coord.Y][coord.X] = true
+					currCoord.X++
 				}
-				currCoord.X += wireLength
 			}
 		}
 	}
