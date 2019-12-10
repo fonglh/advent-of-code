@@ -8,12 +8,12 @@ import (
 )
 
 func main() {
-	fmt.Println(puzzle1())
-	fmt.Println(puzzle2())
+	picture := readPic("08.txt")
+	fmt.Println(puzzle1(picture))
+	puzzle2(picture)
 }
 
-func puzzle1() int {
-	picture := readPic("08.txt")
+func puzzle1(picture []string) int {
 	var minZeroLayer int
 	minZeros := countDigit(picture[0], '0')
 	for i, layer := range picture {
@@ -26,8 +26,26 @@ func puzzle1() int {
 	return countDigit(picture[minZeroLayer], '1') * countDigit(picture[minZeroLayer], '2')
 }
 
-func puzzle2() int {
-	return 0
+func puzzle2(picture []string) {
+	visibleImage := make([]byte, 25*6)
+	for i := 0; i < (25 * 6); i++ {
+		for layerNum := 0; layerNum < len(picture); layerNum++ {
+			if picture[layerNum][i] != '2' {
+				visibleImage[i] = picture[layerNum][i]
+				break
+			}
+		}
+	}
+	for i := range visibleImage {
+		if i%25 == 0 {
+			fmt.Println()
+		}
+		if visibleImage[i] == '1' {
+			fmt.Print("#")
+		} else {
+			fmt.Print(" ")
+		}
+	}
 }
 
 func readPic(filename string) []string {
