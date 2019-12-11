@@ -15,14 +15,122 @@ type coordinate struct {
 }
 
 func main() {
-	//fmt.Println(puzzle1())
 	fmt.Println(puzzle1Retry())
-	//fmt.Println(puzzle2())
+	fmt.Println(puzzle2())
 }
 
 // Use hash map to track coordinate instead.
 func puzzle1Retry() int {
 	wires := readWires("03.txt")
+	intersections := findIntersections(wires)
+
+	return minManhattanDistance(intersections)
+}
+
+func puzzle2() int {
+	wires := readWires("03.txt")
+	intersections := findIntersections(wires)
+	minCombinedSteps := 9999999
+
+	for _, intersection := range intersections {
+		var combinedSteps int
+
+		//wire 1
+		var currCoord coordinate
+		for _, segment := range strings.Split(wires[0], ",") {
+			wireLength, _ := strconv.Atoi(segment[1:])
+			switch segment[0] {
+			case 'U':
+				for dy := 0; dy < wireLength; dy++ {
+					currCoord.Y++
+					combinedSteps++
+					if currCoord == intersection {
+						break
+					}
+				}
+			case 'D':
+				for dy := 0; dy < wireLength; dy++ {
+					currCoord.Y--
+					combinedSteps++
+					if currCoord == intersection {
+						break
+					}
+				}
+			case 'R':
+				for dx := 0; dx < wireLength; dx++ {
+					currCoord.X++
+					combinedSteps++
+					if currCoord == intersection {
+						break
+					}
+				}
+			case 'L':
+				for dx := 0; dx < wireLength; dx++ {
+					currCoord.X--
+					combinedSteps++
+					if currCoord == intersection {
+						break
+					}
+				}
+			}
+			if currCoord == intersection {
+				break
+			}
+		}
+
+		//wire 2
+		currCoord = coordinate{0, 0}
+		for _, segment := range strings.Split(wires[1], ",") {
+			wireLength, _ := strconv.Atoi(segment[1:])
+			switch segment[0] {
+			case 'U':
+				for dy := 0; dy < wireLength; dy++ {
+					currCoord.Y++
+					combinedSteps++
+					if currCoord == intersection {
+						break
+					}
+				}
+			case 'D':
+				for dy := 0; dy < wireLength; dy++ {
+					currCoord.Y--
+					combinedSteps++
+					if currCoord == intersection {
+						break
+					}
+				}
+			case 'R':
+				for dx := 0; dx < wireLength; dx++ {
+					currCoord.X++
+					combinedSteps++
+					if currCoord == intersection {
+						break
+					}
+				}
+			case 'L':
+				for dx := 0; dx < wireLength; dx++ {
+					currCoord.X--
+					combinedSteps++
+					if currCoord == intersection {
+						break
+					}
+				}
+			}
+			if currCoord == intersection {
+				break
+			}
+		}
+
+		// check for minimum
+		if combinedSteps < minCombinedSteps {
+			minCombinedSteps = combinedSteps
+		}
+	}
+
+	return minCombinedSteps
+}
+
+func findIntersections(wires []string) []coordinate {
 	wirePath := make(map[coordinate]bool)
 	var currCoord coordinate
 	for _, segment := range strings.Split(wires[0], ",") {
@@ -88,8 +196,7 @@ func puzzle1Retry() int {
 		}
 	}
 
-	fmt.Println(intersections)
-	return minManhattanDistance(intersections)
+	return intersections
 }
 
 func puzzle1() int {
@@ -157,10 +264,6 @@ func puzzle1() int {
 	offsetIntersections(intersections, minCoord)
 	fmt.Println(intersections)
 	return minManhattanDistance(intersections)
-}
-
-func puzzle2() int {
-	return -1
 }
 
 // Offset X and Y coords back
