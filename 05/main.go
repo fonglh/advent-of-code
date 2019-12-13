@@ -9,8 +9,8 @@ import (
 )
 
 func main() {
-	//fmt.Println(puzzle1()) // answer is 4511442
-	fmt.Println(puzzle2())
+	fmt.Println(puzzle1()) // answer is 4511442
+	fmt.Println(puzzle2()) // answer is 12648139
 }
 
 func puzzle1() int {
@@ -20,8 +20,8 @@ func puzzle1() int {
 }
 
 func puzzle2() int {
-	programInput := readFile("jump-pos.txt")
-	userInput := 1234
+	programInput := readFile("05.txt")
+	userInput := 5
 	return computer(programInput, userInput)
 }
 
@@ -125,6 +125,50 @@ func computer(programInput []int, userInput int) int {
 			} else {
 				i++
 			}
+		// less than
+		case 7:
+			paramMode1 := (programInput[i] / 100) % 10
+			paramMode2 := (programInput[i] / 1000) % 10
+			var param1, param2 int
+			if paramMode1 == 0 {
+				param1 = programInput[programInput[i+1]]
+			} else {
+				param1 = programInput[i+1]
+			}
+			if paramMode2 == 0 {
+				param2 = programInput[programInput[i+2]]
+			} else {
+				param2 = programInput[i+2]
+			}
+			dest := programInput[i+3]
+			if param1 < param2 {
+				programInput[dest] = 1
+			} else {
+				programInput[dest] = 0
+			}
+			i += 2
+		// equals
+		case 8:
+			paramMode1 := (programInput[i] / 100) % 10
+			paramMode2 := (programInput[i] / 1000) % 10
+			var param1, param2 int
+			if paramMode1 == 0 {
+				param1 = programInput[programInput[i+1]]
+			} else {
+				param1 = programInput[i+1]
+			}
+			if paramMode2 == 0 {
+				param2 = programInput[programInput[i+2]]
+			} else {
+				param2 = programInput[i+2]
+			}
+			dest := programInput[i+3]
+			if param1 == param2 {
+				programInput[dest] = 1
+			} else {
+				programInput[dest] = 0
+			}
+			i += 2
 		default:
 			fmt.Println("no instruction", opcode)
 		}
