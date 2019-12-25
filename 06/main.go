@@ -10,6 +10,7 @@ import (
 
 func main() {
 	fmt.Println(puzzle1())
+	fmt.Println(puzzle2())
 }
 
 func puzzle1() int {
@@ -27,7 +28,50 @@ func puzzle1() int {
 }
 
 func puzzle2() int {
-	return 0
+	orbitMap := readFile("06.txt")
+
+	// Build chains from our locations to COM
+	var myChain []string
+	var santaChain []string
+	for curr := orbitMap["YOU"]; curr != ""; curr = orbitMap[curr] {
+		myChain = append(myChain, curr)
+	}
+	for curr := orbitMap["SAN"]; curr != ""; curr = orbitMap[curr] {
+		santaChain = append(santaChain, curr)
+	}
+	fmt.Println(myChain)
+	fmt.Println(santaChain)
+
+	// Find first ancestor node
+	var ancestor string
+	for _, object := range myChain {
+		for _, santaObject := range santaChain {
+			if object == santaObject {
+				ancestor = object
+				break
+			}
+		}
+		if ancestor != "" {
+			break
+		}
+	}
+	fmt.Println(ancestor)
+
+	// Count number of steps from each of us to the common ancestor
+	var transferCount int
+	for _, object := range myChain {
+		if object == ancestor {
+			break
+		}
+		transferCount++
+	}
+	for _, object := range santaChain {
+		if object == ancestor {
+			break
+		}
+		transferCount++
+	}
+	return transferCount
 }
 
 func readFile(filename string) map[string]string {
