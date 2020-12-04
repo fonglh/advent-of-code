@@ -26,11 +26,10 @@ It would be easier to parse if each block (representing a passport) was on its o
 
 This can be done in Vim by recording a macro and then running it.
 
-record a macro: `qa`
-select line: `V`
-select to end of paragraph: `)`
-join all the lines: `J`
-move down 1 line: `j`
-stop recording: `q`
-
-run macro: `999@a`
+1. record a macro: `qa`
+1. select line: `V`
+1. select to end of paragraph: `)`
+1. join all the lines: `J`
+1. move down 1 line: `j`
+1. stop recording: `q`
+1. run macro: `999@a`
