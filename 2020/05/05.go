@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 )
 
 func main() {
@@ -34,6 +35,19 @@ func readFile() []string {
 	}
 
 	return input
+}
+
+func getSeatId2(boardingPass string) int {
+	var binStr string
+	for _, char := range boardingPass {
+		if char == 'F' || char == 'L' {
+			binStr += "0"
+		} else {
+			binStr += "1"
+		}
+	}
+	seatId, _ := strconv.ParseInt(binStr, 2, 32)
+	return int(seatId)
 }
 
 func getSeatId(boardingPass string) int {
@@ -69,7 +83,7 @@ func getSeatRange(input []string) (int, int) {
 	var maxSeatId int
 	minSeatId := 127 * 8
 	for _, boardingPass := range input {
-		seatId := getSeatId(boardingPass)
+		seatId := getSeatId2(boardingPass)
 		if seatId > maxSeatId {
 			maxSeatId = seatId
 		}
@@ -88,7 +102,7 @@ func puzzle1(input []string) int {
 func puzzle2(input []string) int {
 	takenSeats := make(map[int]bool)
 	for _, boardingPass := range input {
-		takenSeats[getSeatId(boardingPass)] = true
+		takenSeats[getSeatId2(boardingPass)] = true
 	}
 
 	minSeatId, maxSeatId := getSeatRange(input)
