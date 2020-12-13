@@ -10,14 +10,15 @@ import (
 )
 
 func main() {
-	input := readFile()
+	input := readFile("07.txt")
+	bagRules := buildBagRules(input)
 
-	fmt.Println(puzzle1(input))
+	fmt.Println(puzzle1(bagRules))
 	//fmt.Println(puzzle2(input))
 }
 
-func readFile() []string {
-	file, err := os.Open("07.txt")
+func readFile(filename string) []string {
+	file, err := os.Open(filename)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -60,13 +61,25 @@ func buildBagRules(input []string) map[string]map[string]int {
 	return bagRules
 }
 
-func puzzle1(input []string) int {
-	bagRules := buildBagRules(input)
+func puzzle1(bagRules map[string]map[string]int) int {
+	answer := make(map[string]bool)
+	queue := []string{"shiny gold"}
 
-	for bag, contents := range bagRules {
-		fmt.Println(bag, contents)
+	for len(queue) > 0 {
+		current := queue[0]
+		queue = queue[1:]
+
+		for bag, contents := range bagRules {
+			if answer[bag] { //already counted this bag
+				continue
+			}
+			if contents[current] > 0 {
+				queue = append(queue, bag)
+				answer[bag] = true
+			}
+		}
 	}
-	return 0
+	return len(answer)
 }
 
 func puzzle2(input []string) int {
