@@ -14,7 +14,7 @@ func main() {
 	bagRules := buildBagRules(input)
 
 	fmt.Println(puzzle1(bagRules))
-	//fmt.Println(puzzle2(input))
+	fmt.Println(puzzle2(bagRules))
 }
 
 func readFile(filename string) []string {
@@ -82,6 +82,18 @@ func puzzle1(bagRules map[string]map[string]int) int {
 	return len(answer)
 }
 
-func puzzle2(input []string) int {
-	return 0
+func puzzle2(bagRules map[string]map[string]int) int {
+	// Don't count the outermost shiny gold bag
+	return countNumBags(bagRules, "shiny gold") - 1
+}
+
+func countNumBags(bagRules map[string]map[string]int, bag string) int {
+	if len(bagRules[bag]) == 0 {
+		return 1
+	}
+	numBags := 1 //include self in the count
+	for bag, count := range bagRules[bag] {
+		numBags += count * countNumBags(bagRules, bag)
+	}
+	return numBags
 }
