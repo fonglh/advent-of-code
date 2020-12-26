@@ -39,45 +39,14 @@ func puzzle1(input []string) int {
 					operatorStack = append(operatorStack, char)
 				} else if char == ")" {
 					// pop until "("
-
 					for operatorStack[len(operatorStack)-1] != "(" {
-						// pop operator
-						topIndex = len(operatorStack) - 1
-						operator := operatorStack[topIndex]
-						operatorStack = operatorStack[:topIndex]
-						// pop 2 operands
-						topIndex = len(operandStack) - 1
-						operand1 := operandStack[topIndex]
-						operandStack = operandStack[:topIndex]
-						topIndex = len(operandStack) - 1
-						operand2 := operandStack[topIndex]
-						operandStack = operandStack[:topIndex]
-						if operator == "+" {
-							operandStack = append(operandStack, operand1+operand2)
-						} else if operator == "*" {
-							operandStack = append(operandStack, operand1*operand2)
-						}
+						popAndEvaluate(&operandStack, &operatorStack)
 					}
 					// pop "("
 					topIndex = len(operatorStack) - 1
 					operatorStack = operatorStack[:topIndex]
 				} else if operatorStack[len(operatorStack)-1] != "(" {
-					// pop operator
-					topIndex = len(operatorStack) - 1
-					operator := operatorStack[topIndex]
-					operatorStack = operatorStack[:topIndex]
-					// pop 2 operands
-					topIndex = len(operandStack) - 1
-					operand1 := operandStack[topIndex]
-					operandStack = operandStack[:topIndex]
-					topIndex = len(operandStack) - 1
-					operand2 := operandStack[topIndex]
-					operandStack = operandStack[:topIndex]
-					if operator == "+" {
-						operandStack = append(operandStack, operand1+operand2)
-					} else if operator == "*" {
-						operandStack = append(operandStack, operand1*operand2)
-					}
+					popAndEvaluate(&operandStack, &operatorStack)
 					operatorStack = append(operatorStack, char)
 				} else {
 					operatorStack = append(operatorStack, char)
@@ -89,28 +58,33 @@ func puzzle1(input []string) int {
 		}
 
 		for len(operatorStack) > 0 {
-			// pop operator
-			topIndex = len(operatorStack) - 1
-			operator := operatorStack[topIndex]
-			operatorStack = operatorStack[:topIndex]
-			// pop 2 operands
-			topIndex = len(operandStack) - 1
-			operand1 := operandStack[topIndex]
-			operandStack = operandStack[:topIndex]
-			topIndex = len(operandStack) - 1
-			operand2 := operandStack[topIndex]
-			operandStack = operandStack[:topIndex]
-			if operator == "+" {
-				operandStack = append(operandStack, operand1+operand2)
-			} else if operator == "*" {
-				operandStack = append(operandStack, operand1*operand2)
-			}
+			popAndEvaluate(&operandStack, &operatorStack)
 		}
 		totalSum += operandStack[0]
 		//fmt.Println(operandStack[0])
 	}
 
 	return totalSum
+}
+
+// pop an operator, pop 2 operands. evaluate the result and push onto operand stack
+func popAndEvaluate(operandStack *[]int, operatorStack *[]string) {
+	// pop operator
+	topIndex := len(*operatorStack) - 1
+	operator := (*operatorStack)[topIndex]
+	*operatorStack = (*operatorStack)[:topIndex]
+	// pop 2 operands
+	topIndex = len(*operandStack) - 1
+	operand1 := (*operandStack)[topIndex]
+	*operandStack = (*operandStack)[:topIndex]
+	topIndex = len(*operandStack) - 1
+	operand2 := (*operandStack)[topIndex]
+	*operandStack = (*operandStack)[:topIndex]
+	if operator == "+" {
+		*operandStack = append(*operandStack, operand1+operand2)
+	} else if operator == "*" {
+		*operandStack = append(*operandStack, operand1*operand2)
+	}
 }
 
 func puzzle2(input []string) int {
@@ -136,43 +110,13 @@ func puzzle2(input []string) int {
 					// pop until "("
 
 					for operatorStack[len(operatorStack)-1] != "(" {
-						// pop operator
-						topIndex = len(operatorStack) - 1
-						operator := operatorStack[topIndex]
-						operatorStack = operatorStack[:topIndex]
-						// pop 2 operands
-						topIndex = len(operandStack) - 1
-						operand1 := operandStack[topIndex]
-						operandStack = operandStack[:topIndex]
-						topIndex = len(operandStack) - 1
-						operand2 := operandStack[topIndex]
-						operandStack = operandStack[:topIndex]
-						if operator == "+" {
-							operandStack = append(operandStack, operand1+operand2)
-						} else if operator == "*" {
-							operandStack = append(operandStack, operand1*operand2)
-						}
+						popAndEvaluate(&operandStack, &operatorStack)
 					}
 					// pop "("
 					topIndex = len(operatorStack) - 1
 					operatorStack = operatorStack[:topIndex]
 				} else if operatorStack[len(operatorStack)-1] == "+" {
-					// pop operator
-					topIndex = len(operatorStack) - 1
-					operator := operatorStack[topIndex]
-					operatorStack = operatorStack[:topIndex]
-					// pop 2 operands
-					topIndex = len(operandStack) - 1
-					operand1 := operandStack[topIndex]
-					operandStack = operandStack[:topIndex]
-					topIndex = len(operandStack) - 1
-					operand2 := operandStack[topIndex]
-					operandStack = operandStack[:topIndex]
-					if operator == "+" {
-						operandStack = append(operandStack, operand1+operand2)
-					} else if operator == "*" {
-						operandStack = append(operandStack, operand1*operand2)
-					}
+					popAndEvaluate(&operandStack, &operatorStack)
 					operatorStack = append(operatorStack, char)
 				} else {
 					operatorStack = append(operatorStack, char)
@@ -184,22 +128,7 @@ func puzzle2(input []string) int {
 		}
 
 		for len(operatorStack) > 0 {
-			// pop operator
-			topIndex = len(operatorStack) - 1
-			operator := operatorStack[topIndex]
-			operatorStack = operatorStack[:topIndex]
-			// pop 2 operands
-			topIndex = len(operandStack) - 1
-			operand1 := operandStack[topIndex]
-			operandStack = operandStack[:topIndex]
-			topIndex = len(operandStack) - 1
-			operand2 := operandStack[topIndex]
-			operandStack = operandStack[:topIndex]
-			if operator == "+" {
-				operandStack = append(operandStack, operand1+operand2)
-			} else if operator == "*" {
-				operandStack = append(operandStack, operand1*operand2)
-			}
+			popAndEvaluate(&operandStack, &operatorStack)
 		}
 		totalSum += operandStack[0]
 		//fmt.Println(operandStack[0])
