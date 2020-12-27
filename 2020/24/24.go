@@ -19,7 +19,7 @@ type Hex struct {
 func main() {
 	input := readFile("24.txt")
 
-	//fmt.Println(puzzle1(input))
+	fmt.Println(puzzle1(input))
 	fmt.Println(puzzle2(input))
 }
 
@@ -78,6 +78,7 @@ func puzzle1(input []string) int {
 
 func puzzle2(input []string) int {
 	floor := make(map[Hex]bool)
+	floorCopy := make(map[Hex]bool)
 
 	// Day 0, setup floor from input
 	for _, line := range input {
@@ -88,7 +89,11 @@ func puzzle2(input []string) int {
 	minHex, maxHex := searchFloor(floor)
 
 	for day := 1; day <= 100; day += 1 {
-		floorCopy := make(map[Hex]bool)
+		if day%2 == 1 {
+			floorCopy = make(map[Hex]bool)
+		} else {
+			floor = make(map[Hex]bool)
+		}
 
 		minHex = Hex{minHex.x - 1, minHex.y - 1, minHex.z - 1}
 		maxHex = Hex{maxHex.x + 1, maxHex.y + 1, maxHex.z + 1}
@@ -96,24 +101,43 @@ func puzzle2(input []string) int {
 			for y := minHex.y; y <= maxHex.y; y += 1 {
 				for z := minHex.z; z <= maxHex.z; z += 1 {
 					currHex := Hex{x, y, z}
-					numBlackNeighbours := countNeighbourBlack(floor, currHex)
-					if floor[currHex] && (numBlackNeighbours == 0 || numBlackNeighbours > 2) {
-						floorCopy[currHex] = false
-					} else if !floor[currHex] && numBlackNeighbours == 2 {
-						floorCopy[currHex] = true
+					var numBlackNeighbours int
+					if day%2 == 1 {
+						numBlackNeighbours = countNeighbourBlack(floor, currHex)
 					} else {
-						floorCopy[currHex] = floor[currHex]
+						numBlackNeighbours = countNeighbourBlack(floorCopy, currHex)
+					}
+
+					if day%2 == 1 {
+						if floor[currHex] && (numBlackNeighbours == 0 || numBlackNeighbours > 2) {
+							delete(floorCopy, currHex)
+						} else if !floor[currHex] && numBlackNeighbours == 2 {
+							floorCopy[currHex] = true
+						} else {
+							if floor[currHex] {
+								floorCopy[currHex] = floor[currHex]
+							}
+						}
+					} else {
+						if floorCopy[currHex] && (numBlackNeighbours == 0 || numBlackNeighbours > 2) {
+							delete(floor, currHex)
+						} else if !floorCopy[currHex] && numBlackNeighbours == 2 {
+							floor[currHex] = true
+						} else {
+							if floorCopy[currHex] {
+								floor[currHex] = floorCopy[currHex]
+							}
+						}
 					}
 				}
 			}
 		}
 
-		// reset floor and copy the new floor over
-		floor = make(map[Hex]bool)
-		for k, v := range floorCopy {
-			floor[k] = v
+		if day%2 == 1 {
+			fmt.Printf("Day %d: %d\n", day, countFloorBlack(floorCopy))
+		} else {
+			fmt.Printf("Day %d: %d\n", day, countFloorBlack(floor))
 		}
-		fmt.Printf("Day %d: %d\n", day, countFloorBlack(floor))
 	}
 
 	return countFloorBlack(floor)
