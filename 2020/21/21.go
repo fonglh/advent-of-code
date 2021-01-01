@@ -5,18 +5,22 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strings"
 )
 
 func main() {
 	input := readFile("21.txt")
 
-	fmt.Println(puzzle1(input))
-	fmt.Println(puzzle2(input))
+	p1Answer, allergenToIngredients := puzzle1(input)
+
+	fmt.Println(p1Answer)
+	fmt.Println(puzzle2(allergenToIngredients))
 }
 
-func puzzle1(input []string) int {
+func puzzle1(input []string) (int, map[string][]string) {
 	allergenToIngredients := make(map[string][]string)
+	// just a combined list of all the ingredients to count the number of times ingredients cannot have allergens.
 	allIngredients := make([]string, 0)
 
 	for _, line := range input {
@@ -48,7 +52,8 @@ func puzzle1(input []string) int {
 			count += 1
 		}
 	}
-	return count
+
+	return count, allergenToIngredients
 }
 
 func intersect(ingredientList, ingredients []string) []string {
@@ -70,8 +75,49 @@ func contains(list []string, value string) bool {
 	return false
 }
 
-func puzzle2(input []string) int {
-	return 0
+func puzzle2(allergenToIngredients map[string][]string) string {
+	allergenMap := make(map[string]string)
+
+	for len(allergenToIngredients) > 0 {
+		var knownIngredient string
+		for allergen, ing := range allergenToIngredients {
+			// when there is 1 ingredient for that allergen, the mapping is certain.
+			// add it to the map
+			if len(ing) == 1 {
+				knownIngredient = ing[0]
+				allergenMap[allergen] = knownIngredient
+				delete(allergenToIngredients, allergen)
+				break
+			}
+		}
+
+		// remove known dangerous ingredient from all the remaining lists
+		// this should result in another allergen having only 1 possible ingredient
+		for allergen, ingList := range allergenToIngredients {
+			newIngList := make([]string, 0)
+			for _, ing := range ingList {
+				if ing != knownIngredient {
+					newIngList = append(newIngList, ing)
+				}
+			}
+			allergenToIngredients[allergen] = newIngList
+		}
+	}
+
+	// get all the allergens from the map and sort the allergen list
+	allergenList := make([]string, 0)
+	for allergen, _ := range allergenMap {
+		allergenList = append(allergenList, allergen)
+	}
+	sort.Strings(allergenList)
+
+	// create the list of dangerous ingredients sorted by the allergen list
+	dangerousList := make([]string, 0)
+	for _, allergen := range allergenList {
+		dangerousList = append(dangerousList, allergenMap[allergen])
+	}
+
+	return strings.Join(dangerousList, ",")
 }
 
 // return list of ingredients in each line, followed by list of allergens
