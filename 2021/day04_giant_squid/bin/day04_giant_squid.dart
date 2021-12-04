@@ -11,23 +11,44 @@ void main(List<String> arguments) async {
   final boardsInput = input.sublist(2);
   List<Board> boards = [];
 
+  // 5 lines for the board, 1 line for the empty line between boards.
   for (int i = 0; i < boardsInput.length; i += 6) {
     final currentBoardList = boardsInput.sublist(i, i + 5);
     boards.add(Board(currentBoardList));
   }
 
+  print(firstWinningBoard(boards, drawnNumbers));
+  print(lastWinningBoard(boards, drawnNumbers));
+}
+
+int firstWinningBoard(List<Board> boards, List<int> drawnNumbers) {
   for (int num in drawnNumbers) {
     for (Board board in boards) {
       board.mark(num);
       if (board.anyWin()) {
-        print("WINNER");
-        print(board.score(num));
-        exit(0);
+        return board.score(num);
       }
     }
   }
 
-  print(boards[0]);
+  return -1;
+}
+
+int lastWinningBoard(List<Board> boards, List<int> drawnNumbers) {
+  int latestScore = -1;
+
+  for (int num in drawnNumbers) {
+    for (Board board in boards) {
+      if (!board.anyWin()) {
+        board.mark(num);
+        if (board.anyWin()) {
+          latestScore = board.score(num);
+        }
+      }
+    }
+  }
+
+  return latestScore;
 }
 
 Future<List<String>> readFile(String path) async {

@@ -1,8 +1,10 @@
 class Board {
   List<int> board = [];
   late List<bool> marks;
+  int winOrder = 0;
 
   Board(List<String> boardString) {
+    // To handle right aligned single digit numbers.
     var re = RegExp(r"\s+");
     for (var row in boardString) {
       var rowList = row.trim().split(re).map((s) => int.parse(s)).toList();
