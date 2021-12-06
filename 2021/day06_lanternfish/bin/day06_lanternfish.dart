@@ -2,36 +2,46 @@ import 'dart:convert';
 import 'dart:io';
 
 void main(List<String> arguments) async {
-  final input = await readFile("06-test.txt");
+  final input = await readFile("06.txt");
 
-  List<int> fishes = input[0].split(",").map((e) => int.parse(e)).toList();
+  List<int> fishList = input[0].split(",").map((e) => int.parse(e)).toList();
 
-  for (int day = 0; day < 80; day++) {
+  var fishes = initFishes(fishList);
+
+  for (int day = 0; day < 256; day++) {
     fishes = advanceDay(fishes);
   }
 
-  print(fishes.length);
+  int totalFishes = 0;
+  for (int timer = 0; timer <= 8; timer++) {
+    totalFishes += fishes[timer]!;
+  }
+
+  print(totalFishes);
 }
 
-List<int> advanceDay(List<int> fishes) {
-  List<int> newFishes = [];
-  int toAdd = 0;
+Map<int, int> initFishes(List<int> fishList) {
+  var fishes = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0};
 
-  for (int fish in fishes) {
-    if (fish == 0) {
-      newFishes.add(6);
-      toAdd += 1;
+  for (int fishTimer in fishList) {
+    fishes[fishTimer] = fishes[fishTimer]! + 1;
+  }
+
+  return fishes;
+}
+
+Map<int, int> advanceDay(Map<int, int> fishes) {
+  var nextFishes = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0};
+
+  for (int timer = 8; timer >= 0; timer--) {
+    if (timer == 0) {
+      nextFishes[8] = fishes[0]!;
+      nextFishes[6] = nextFishes[6]! + fishes[0]!;
     } else {
-      newFishes.add(fish - 1);
+      nextFishes[timer - 1] = fishes[timer]!;
     }
   }
-
-  // Implement this way for easier comparison with sample output
-  for (int i = 0; i < toAdd; i++) {
-    newFishes.add(8);
-  }
-
-  return newFishes;
+  return nextFishes;
 }
 
 Future<List<String>> readFile(String path) async {
