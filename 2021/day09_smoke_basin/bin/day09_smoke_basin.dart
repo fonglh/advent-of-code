@@ -29,13 +29,11 @@ int part1(List<List<int>> heightMap) {
 
 int part2(List<List<int>> heightMap) {
   List<int> allBasinSizes = [];
+
   for (int row = 0; row < heightMap.length; row++) {
     for (int col = 0; col < heightMap[0].length; col++) {
       if (isLowPoint(row, col, heightMap)) {
-        var checked = List.generate(heightMap.length,
-            (i) => List.generate(heightMap[0].length, (j) => false));
-
-        allBasinSizes.add(basinSize(row, col, heightMap, checked));
+        allBasinSizes.add(basinSize(row, col, heightMap));
       }
     }
   }
@@ -46,22 +44,23 @@ int part2(List<List<int>> heightMap) {
   return allBasinSizes[0] * allBasinSizes[1] * allBasinSizes[2];
 }
 
-int basinSize(
-    int row, int col, List<List<int>> heightMap, List<List<bool>> checked) {
+int basinSize(int row, int col, List<List<int>> heightMap) {
   if (row < 0 ||
       col < 0 ||
       row >= heightMap.length ||
       col >= heightMap[0].length) {
     return 0;
-  } else if (heightMap[row][col] == 9 || checked[row][col]) {
+  } else if (heightMap[row][col] == 9) {
     return 0;
   } else {
-    checked[row][col] = true;
+    // Mark as visited by treating it as a high point.
+    // This works because each point is part of exactly 1 basin.
+    heightMap[row][col] = 9;
     return 1 +
-        basinSize(row + 1, col, heightMap, checked) +
-        basinSize(row - 1, col, heightMap, checked) +
-        basinSize(row, col - 1, heightMap, checked) +
-        basinSize(row, col + 1, heightMap, checked);
+        basinSize(row + 1, col, heightMap) +
+        basinSize(row - 1, col, heightMap) +
+        basinSize(row, col - 1, heightMap) +
+        basinSize(row, col + 1, heightMap);
   }
 }
 
