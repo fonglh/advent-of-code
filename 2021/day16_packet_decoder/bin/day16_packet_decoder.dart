@@ -6,11 +6,17 @@ void main(List<String> arguments) {
   final binaryString = toBinary(rawInput);
   // print(binaryString);
 
-  final testInput = "A0016C880162017C3686B18A3D4780";
+  final testInput = "9C005AC2F8F0";
   final testBinaryString = toBinary(testInput);
+  // print(testBinaryString);
 
-  print(testBinaryString);
+  // Part 1
   print(sumVersionNumbers(binaryString).x.toInt());
+
+  // Part 2
+  print(
+      "--------------------------------------------------------------------------------");
+  print(evaluatePacket(binaryString).x.toInt());
 }
 
 // Cannot use built-in radix conversions as the padding gets lost
@@ -40,6 +46,111 @@ String toBinary(String hexString) {
     result += hexToBin[element]!;
   });
   return result;
+}
+
+// For part 2, parse packet and evaluate the expression from the literal values
+// Use Point as a tuple, returning (literalResult, processedLength)
+Point evaluatePacket(String packetBits) {
+  // Insufficient bits to form the shortest literal packet
+  if (packetBits.length < 11) {
+    return Point(0, packetBits.length);
+  }
+
+  int processedLength = 0;
+  List<int> literalValues = [];
+
+  // Read packet header and drop those 6 bits
+  int packetVersion = int.parse(packetBits.substring(0, 3), radix: 2);
+  int packetTypeId = int.parse(packetBits.substring(3, 6), radix: 2);
+  packetBits = packetBits.substring(6);
+  processedLength += 6;
+
+  switch (packetTypeId) {
+    // Literal value packet
+    case 4:
+      String literalBits = "";
+      while (true) {
+        bool stopParsing = packetBits[0] != "1";
+        literalBits += packetBits.substring(0, 5).substring(1);
+
+        // Remove each group of 5 bits
+        packetBits = packetBits.substring(5);
+        processedLength += 5;
+        if (stopParsing) {
+          break;
+        }
+      }
+      int literalValue = int.parse(literalBits, radix: 2);
+      // print(literalValue);
+      return Point(literalValue, processedLength);
+    // Operator packet
+    default:
+      // Length type ID is the next bit
+      String lengthTypeId = packetBits[0];
+      packetBits = packetBits.substring(1);
+      processedLength += 1;
+
+      if (lengthTypeId == "0") {
+        int subPacketLength = int.parse(packetBits.substring(0, 15), radix: 2);
+        packetBits = packetBits.substring(15);
+        processedLength += 15;
+
+        int subPacketProcessedLength = 0;
+        while (subPacketProcessedLength < subPacketLength) {
+          var parseResult = evaluatePacket(packetBits);
+          literalValues.add(parseResult.x.toInt());
+          processedLength += parseResult.y.toInt();
+          subPacketProcessedLength += parseResult.y.toInt();
+          packetBits = packetBits.substring(parseResult.y.toInt());
+        }
+      } else {
+        int subPacketCount = int.parse(packetBits.substring(0, 11), radix: 2);
+        packetBits = packetBits.substring(11);
+        processedLength += 11;
+
+        int subPacketProcessedCount = 0;
+        while (subPacketProcessedCount < subPacketCount) {
+          var parseResult = evaluatePacket(packetBits);
+          literalValues.add(parseResult.x.toInt());
+          processedLength += parseResult.y.toInt();
+          subPacketProcessedCount++;
+          packetBits = packetBits.substring(parseResult.y.toInt());
+        }
+      }
+      break;
+  }
+
+  // Process collected literal values according to operator packet type
+  switch (packetTypeId) {
+    // Sum packet
+    case 0:
+      return Point(literalValues.reduce((value, element) => value + element),
+          processedLength);
+    // Product packet
+    case 1:
+      return Point(literalValues.reduce((value, element) => value * element),
+          processedLength);
+    // Min packet
+    case 2:
+      return Point(literalValues.reduce(min), processedLength);
+    // Max packet
+    case 3:
+      return Point(literalValues.reduce(max), processedLength);
+    // Greater than
+    case 5:
+      return Point(
+          literalValues[0] > literalValues[1] ? 1 : 0, processedLength);
+    // Less than
+    case 6:
+      return Point(
+          literalValues[0] < literalValues[1] ? 1 : 0, processedLength);
+    // Equal
+    case 7:
+      return Point(
+          literalValues[0] == literalValues[1] ? 1 : 0, processedLength);
+    default:
+      return Point(0, processedLength);
+  }
 }
 
 // For part 1, parse packet and sum up the version numbers
@@ -74,7 +185,7 @@ Point sumVersionNumbers(String packetBits) {
         }
       }
       int literalValue = int.parse(literalBits, radix: 2);
-      print(literalValue);
+      // print(literalValue);
       return Point(packetVersion, processedLength);
     // Operator packet
     default:
