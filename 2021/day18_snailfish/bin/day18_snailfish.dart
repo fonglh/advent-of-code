@@ -1,20 +1,33 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 // All operations need to be done on List<String> so double digit numbers
 // that happen during the 'explode' operation are easier to handle.
 // Keep the commas for easier debugging, can just use 'join'.
+// https://github.com/fridokus/advent-of-code/blob/master/2021/18.py
 void main(List<String> arguments) async {
   final input = await readFile("18.txt");
 
   List<String> finalSum = input[0].split("");
 
+  // Part 1
   for (int i = 1; i < input.length; i++) {
     finalSum = add(finalSum, input[i].split(""));
-    finalSum = reduce(finalSum);
   }
-
   print(magnitude(finalSum.join()));
+
+  // Part 2
+  int maxMagnitude = 0;
+  for (int i = 0; i < input.length; i++) {
+    for (int j = 0; j < input.length; j++) {
+      int sum1 = magnitude(add(input[i].split(""), input[j].split("")).join());
+      int sum2 = magnitude(add(input[j].split(""), input[i].split("")).join());
+
+      maxMagnitude = max(maxMagnitude, max(sum1, sum2));
+    }
+  }
+  print(maxMagnitude);
 }
 
 List<String> reduce(List<String> snail) {
@@ -94,7 +107,7 @@ int? shouldExplode(List<String> snail) {
 }
 
 List<String> add(List<String> snail1, List<String> snail2) {
-  return ["["] + snail1 + [","] + snail2 + ["]"];
+  return reduce(["["] + snail1 + [","] + snail2 + ["]"]);
 }
 
 // https://github.com/Myxcil/AdventOfCode2021/blob/main/Day18/day18_main.py
