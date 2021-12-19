@@ -35,11 +35,8 @@ class Point3 {
     ];
   }
 
-  List<Point3> allTransformationsTranslated(Point3 translate) {
-    return allTransformations()
-        .map((element) => Point3(element.x + translate.x,
-            element.y + translate.y, element.z + translate.z))
-        .toList();
+  int manhattanDistance(Point3 other) {
+    return (x - other.x).abs() + (y - other.y).abs() + (z - other.z).abs();
   }
 
   Point3 operator +(Point3 other) {

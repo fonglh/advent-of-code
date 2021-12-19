@@ -58,6 +58,21 @@ void main(List<String> arguments) async {
 
   // Part 1
   print(countBeacons(scanners));
+
+  // Part 2
+  int maxManhattanDistance = 0;
+
+  for (int i = 0; i < scanners.length; i++) {
+    for (int j = 0; j < scanners.length; j++) {
+      int manhattanDistance =
+          scanners[i].position!.manhattanDistance(scanners[j].position!);
+      if (manhattanDistance > maxManhattanDistance) {
+        maxManhattanDistance = manhattanDistance;
+      }
+    }
+  }
+
+  print(maxManhattanDistance);
 }
 
 // Assumes all the beacons in scanners have been normalized to scanner 0
