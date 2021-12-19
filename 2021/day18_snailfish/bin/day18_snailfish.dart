@@ -20,7 +20,7 @@ void main(List<String> arguments) async {
   // Part 2
   int maxMagnitude = 0;
   for (int i = 0; i < input.length; i++) {
-    for (int j = 0; j < input.length; j++) {
+    for (int j = i + 1; j < input.length; j++) {
       int sum1 = magnitude(add(input[i].split(""), input[j].split("")).join());
       int sum2 = magnitude(add(input[j].split(""), input[i].split("")).join());
 
