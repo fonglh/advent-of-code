@@ -5,7 +5,7 @@ void main(List<String> arguments) {
   //Burrow burrow =
   //    Burrow.fromStrings("...........", ["BDDA", "CCBD", "BBAC", "DACA"]);
   Burrow burrow = Burrow.fromStrings("...........", ["BA", "CD", "BC", "DA"]);
-  Burrow burrow1 = Burrow.fromStrings("...........", ["BA", "CD", "BC", "DA"]);
+  Burrow burrow1 = Burrow.fromStrings(".....D...A.", [".A", "BB", "CC", ".D"]);
 
   // Actual input burrow
   //Burrow burrow =
@@ -13,8 +13,12 @@ void main(List<String> arguments) {
   //print(burrow);
 
   Set<Burrow> uniqueBurrows = {};
-  uniqueBurrows.add(burrow);
-  uniqueBurrows.add(burrow1);
   print(uniqueBurrows.length);
-  print(burrow == burrow1);
+
+  var newBurrows = burrow1.moveHallwayToRoom();
+  print(newBurrows.length);
+  for (int i = 0; i < newBurrows.length; i++) {
+    print(newBurrows[i]);
+    print("----------------------------------------");
+  }
 }
