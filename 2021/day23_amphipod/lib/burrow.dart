@@ -46,6 +46,14 @@ class Burrow {
     return b;
   }
 
+  List<Burrow> nextBurrows() {
+    List<Burrow> result = moveHallwayToRoom();
+    for (int i = 0; i < 4; i++) {
+      result.addAll(moveRoomToHallway(i));
+    }
+    return result;
+  }
+
   // Returns a list of all possible burrows when an amphipod is moved
   // from the hallway to a room.
   List<Burrow> moveHallwayToRoom() {
@@ -173,6 +181,15 @@ class Burrow {
     }
 
     return results;
+  }
+
+  bool isComplete() {
+    bool result = hallway.every((space) => space == -1);
+
+    for (int i = 0; result && i < rooms.length; i++) {
+      result &= rooms[i].every((space) => space == i);
+    }
+    return result;
   }
 
   @override
