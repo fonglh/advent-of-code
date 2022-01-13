@@ -18,6 +18,8 @@ void main(List<String> arguments) {
 int minCost(Burrow burrow) {
   Set<Burrow> visited = {};
   Map<Burrow, int> costs = {};
+  Map<Burrow, Burrow> prev = {};
+
   final queue = PriorityQueue<Burrow>((a, b) {
     return a.cost.compareTo(b.cost);
   });
@@ -29,6 +31,7 @@ int minCost(Burrow burrow) {
   while (queue.isNotEmpty) {
     Burrow current = queue.removeFirst();
     if (current.isComplete()) {
+      viewMinCostPath(prev, current);
       return current.cost;
     }
 
@@ -41,10 +44,22 @@ int minCost(Burrow burrow) {
           costs.remove(nextBurrows[i]);
           costs[nextBurrows[i]] = nextBurrows[i].cost;
           queue.add(nextBurrows[i]);
+
+          prev.remove(nextBurrows[i]);
+          prev[nextBurrows[i]] = current;
         }
       }
     }
   }
 
   return 0;
+}
+
+void viewMinCostPath(Map<Burrow, Burrow> prev, Burrow destination) {
+  Burrow? currPathBurrow = destination;
+  while (currPathBurrow != null) {
+    print(currPathBurrow);
+    print("----------------------------------------");
+    currPathBurrow = prev[currPathBurrow];
+  }
 }
